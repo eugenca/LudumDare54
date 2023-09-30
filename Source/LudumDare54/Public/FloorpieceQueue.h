@@ -12,6 +12,8 @@ UCLASS()
 class LUDUMDARE54_API AFloorpieceQueue : public AActor
 {
 	GENERATED_BODY()
+
+	AFloorpiece* Spawn();
 	
 public:	
 	// Sets default values for this actor's properties
