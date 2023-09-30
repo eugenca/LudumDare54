@@ -4,3 +4,5 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, LudumDare54, "LudumDare54" );
+
+DEFINE_LOG_CATEGORY(LogHermit);

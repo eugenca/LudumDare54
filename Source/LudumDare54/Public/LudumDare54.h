@@ -4,3 +4,4 @@
 
 #include "CoreMinimal.h"
 
+LUDUMDARE54_API DECLARE_LOG_CATEGORY_EXTERN(LogHermit, Log, All);

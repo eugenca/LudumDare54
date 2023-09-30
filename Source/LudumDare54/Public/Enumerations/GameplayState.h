@@ -7,12 +7,15 @@
 #include "GameplayState.generated.h"
 
 /**
- * 
+ * Possible Game States
  */
 UENUM()
-enum EGameplayState : uint8
+enum EHermitGameplayState : uint8
 {
-	Start,
-	Play,
+	MainMenu,
+	PlayingCharacter,
+	EndGameSequence,
+	ScoreTable,
+
 	End
 };
