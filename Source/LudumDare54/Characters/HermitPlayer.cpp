@@ -6,7 +6,10 @@
 #include "Logging/StructuredLog.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+using KML = UKismetMathLibrary;
 
 // Sets default values
 AHermitPlayer::AHermitPlayer()
@@ -38,7 +41,14 @@ void AHermitPlayer::BeginPlay()
 void AHermitPlayer::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+	FRotator r = GetControlRotation();
+
+	const FVector v = KML::GetRightVector({ 0, r.Roll, r.Yaw });
+	AddMovementInput(v, MovementVector.X);
+
+	const FVector va = KML::GetForwardVector({ 0, 0, r.Yaw });
+	AddMovementInput(va, MovementVector.Y);
 }
 
 void AHermitPlayer::Interact(const FInputActionValue& Value)
