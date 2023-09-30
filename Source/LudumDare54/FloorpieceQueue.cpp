@@ -15,8 +15,16 @@ void AFloorpieceQueue::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UWorld* MyLevel = GetWorld();
+
+	if (!IsValid(BaseObject))
+	{
+		return;
+	}
+
 	for (int i = 0; i < QueueLength; ++i)
 	{
+		
 	}
 }
 
