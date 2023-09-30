@@ -1,8 +1,6 @@
-
-
+#include "HermitPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "HermitPlayerController.h"
 
 #include "Logging/StructuredLog.h"
 
