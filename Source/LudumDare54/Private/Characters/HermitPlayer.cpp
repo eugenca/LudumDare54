@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HermitPlayer.h"
+#include "Characters/HermitPlayer.h"
 
 #include "Logging/StructuredLog.h"
 #include "EnhancedInputComponent.h"

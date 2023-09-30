@@ -7,7 +7,7 @@
 #include "Enumerations/GameplayState.h"
 #include "Ludum54GM.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGameplayStateChangedSignature, EGameplayState, NewState, EGameplayState, OldState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGameplayStateChangedSignature, EHermitGameplayState, NewState, EHermitGameplayState, OldState);
 
 /**
  * 
@@ -19,12 +19,15 @@ class LUDUMDARE54_API ALudum54GM : public AGameModeBase
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<EGameplayState> State;
+	TEnumAsByte<EHermitGameplayState> State;
 
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnGameplayStateChangedSignature OnGameplayStateChanged;
 
 	UFUNCTION(BlueprintCallable, Category = "Input Mode")
-	void SetGameplayState(EGameplayState NewState);
+	void SetGameplayState(EHermitGameplayState NewState);
+
+	UFUNCTION(BlueprintPure, Category = "Input Mode")
+	EHermitGameplayState GetGameplayState() { return State.GetValue(); };
 };

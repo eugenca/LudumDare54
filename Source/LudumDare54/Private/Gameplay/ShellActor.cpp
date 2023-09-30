@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ShellActor.h"
+#include "Gameplay/ShellActor.h"
 
 
 // Sets default values

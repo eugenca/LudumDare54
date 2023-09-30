@@ -3,9 +3,9 @@
 
 #include "Ludum54GM.h"
 
-void ALudum54GM::SetGameplayState(EGameplayState NewState)
+void ALudum54GM::SetGameplayState(EHermitGameplayState NewState)
 {
-	EGameplayState OldState = State;
+	EHermitGameplayState OldState = State;
 	State = NewState;
 
 	OnGameplayStateChanged.Broadcast(State, OldState);
