@@ -24,7 +24,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Setup)
 	TSubclassOf<AFloorpiece> BaseObject;
 
-	TQueue<AFloorpiece*, EQueueMode::Spsc>* State;
+	TQueue<AFloorpiece*, EQueueMode::Spsc>* Queue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Setup)
+	int32 QueueLength = 5;
 
 public:	
 	// Called every frame
