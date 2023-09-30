@@ -19,7 +19,7 @@ class LUDUMDARE54_API ALudum54GM : public AGameModeBase
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<EHermitGameplayState> State;
+	TEnumAsByte<EHermitGameplayState> State = EHermitGameplayState::MainMenu;
 
 public:
 	UPROPERTY(BlueprintAssignable)
