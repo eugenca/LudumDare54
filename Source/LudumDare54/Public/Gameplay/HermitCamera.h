@@ -4,26 +4,44 @@
 
 #include "CoreMinimal.h"
 #include "Camera/CameraActor.h"
+
 #include "Enumerations/GameplayState.h"
+#include "Gameplay/HermitStateChangedInterface.h"
 
 #include "HermitCamera.generated.h"
 
 UCLASS()
-class LUDUMDARE54_API AHermitCamera : public ACameraActor
+class LUDUMDARE54_API AHermitCamera : public ACameraActor, public IHermitStateChangedInterface
 {
 	GENERATED_BODY()
+
+public:
+	AHermitCamera();
 
 protected:
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	// End AActor Interface
 
-	void StateChanged(EHermitGameplayState NewState, EHermitGameplayState OldState);
+	// Begin IHermitStateChangedInterface Interface
+public:
+	UFUNCTION() virtual void StateChanged(EHermitGameplayState NewState, EHermitGameplayState OldState) override { StateChangedImplementation(NewState, OldState); }
+protected:
+	virtual void StateChanged_MainMenu() override;
+    virtual void StateChanged_PlayingCharacter() override;
+    virtual void StateChanged_EndGameSequence() override;
+    virtual void StateChanged_ScoreTable() override;
+	// End IHermitStateChangedInterface Interface
 
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = StatePlacement)
 	AActor* MainMenuTransformTarget;
 
+
+
+private:
+	AActor* ActorToFollow = nullptr;
 
 };
