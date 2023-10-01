@@ -39,6 +39,8 @@ void AFloorpieceQueue::BeginPlay()
 	{
 		if (AFloorpiece* Floorpiece = Spawn(i)) Queue->Enqueue(Floorpiece);
 	}
+
+	GetWorldTimerManager().SetTimer(CountdownHandle, this, &AFloorpieceQueue::TimerTick, TimerDelay, true, 0.0);
 }
 
 void AFloorpieceQueue::StateChanged_MainMenu()
@@ -49,7 +51,7 @@ void AFloorpieceQueue::StateChanged_MainMenu()
 void AFloorpieceQueue::StateChanged_PlayingCharacter()
 {
 	IHermitStateChangedInterface::StateChanged_PlayingCharacter();
-	GetWorldTimerManager().SetTimer(CountdownHandle, this, &AFloorpieceQueue::TimerTick, TimerDelay, true, 0.0);
+	
 }
 
 void AFloorpieceQueue::StateChanged_EndGameSequence()

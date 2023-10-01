@@ -55,7 +55,8 @@ void AFloorpiece::Tick(float DeltaTime)
 
 void AFloorpiece::MoveFloorpiece(FVector NewLocation)
 {
-	AddActorWorldOffset(NewLocation);
+	this->AddActorWorldOffset(NewLocation);
+
 	FVector Origin;
 	FVector Extent;
 	float Radius;
