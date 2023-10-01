@@ -103,15 +103,20 @@ void AHermitPlayer::Tick(float DeltaTime)
 		return;
 	}
 
+	CurrentHermitScale += HermitGrowthRate * DeltaTime;
+	SetActorScale3D(FVector(CurrentHermitScale));
+
 	FVector MyLocation = GetActorLocation();
 
+	const double CurrentRadius = BaseInteractRadius * CurrentHermitScale;
 
-	MyLocation.X = FMath::Clamp(MyLocation.X, HermitHalfSize.X, MapController->HorizontalSize - HermitHalfSize.X);
-	MyLocation.Y = FMath::Clamp(MyLocation.Y, MapController->CurrentPosition + HermitHalfSize.Y, MapController->CurrentPosition + MapController->CurrentVerticalSize - HermitHalfSize.Y);
+	MyLocation.X = FMath::Clamp(MyLocation.X, CurrentRadius, MapController->HorizontalSize - CurrentRadius);
+	MyLocation.Y = FMath::Clamp(MyLocation.Y,
+		MapController->CurrentPosition + CurrentRadius,
+		MapController->CurrentPosition + MapController->CurrentVerticalSize - CurrentRadius);
 	SetActorLocation(MyLocation);
 
-	CurrentHermitScale += HermitGrowthRate * HermitGrowthCoefficient * DeltaTime;
-	SetActorScale3D(FVector(CurrentHermitScale));
+	
 
 }
 

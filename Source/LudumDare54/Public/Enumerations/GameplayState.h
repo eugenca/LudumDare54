@@ -9,7 +9,7 @@
 /**
  * Possible Game States
  */
-UENUM()
+UENUM(BlueprintType)
 enum EHermitGameplayState : uint8
 {
 	MainMenu,

@@ -42,6 +42,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
 	double DefaultCameraHeight = 300.;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
+	//double CameraViewBoxXAdditionToIncreaseHeight = 50.;
+
+private:
 	double CameraHeightRatio;
 	double CurrentCameraHeight;
 
