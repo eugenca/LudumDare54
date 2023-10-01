@@ -6,10 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "Containers/Queue.h"
 #include "Floorpiece.h"
+#include "Gameplay/HermitStateChangedInterface.h"
 #include "FloorpieceQueue.generated.h"
 
 UCLASS()
-class LUDUMDARE54_API AFloorpieceQueue : public AActor
+class LUDUMDARE54_API AFloorpieceQueue : public AActor, public IHermitStateChangedInterface
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,16 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Begin IHermitStateChangedInterface Interface
+public:
+	UFUNCTION() virtual void StateChanged(EHermitGameplayState NewState, EHermitGameplayState OldState) override { StateChangedImplementation(NewState, OldState); }
+protected:
+	virtual void StateChanged_MainMenu() override;
+	virtual void StateChanged_PlayingCharacter() override;
+	virtual void StateChanged_EndGameSequence() override;
+	virtual void StateChanged_ScoreTable() override;
+	// End IHermitStateChangedInterface Interface
 
 	// - Queue
 

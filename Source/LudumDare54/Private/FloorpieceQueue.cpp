@@ -15,7 +15,7 @@ AFloorpiece* AFloorpieceQueue::Spawn(float indexMult)
 	if (IsValid(SpawnedActor))
 	{
 		UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %s"), *SpawnedActor->GetName());
-		SpawnedActor->AddActorWorldOffset({ indexMult * SpawnedActor->MeshBoundsX, 0,0 });
+		SpawnedActor->AddActorWorldOffset({ 0, indexMult * SpawnedActor->MeshBoundsY,0 });
 	}
 	
 	return SpawnedActor;
@@ -37,8 +37,27 @@ void AFloorpieceQueue::BeginPlay()
 	{
 		if (AFloorpiece* Floorpiece = Spawn(i)) Queue->Enqueue(Floorpiece);
 	}
+}
 
+void AFloorpieceQueue::StateChanged_MainMenu()
+{
+	IHermitStateChangedInterface::StateChanged_MainMenu();
+}
+
+void AFloorpieceQueue::StateChanged_PlayingCharacter()
+{
+	IHermitStateChangedInterface::StateChanged_PlayingCharacter();
 	GetWorldTimerManager().SetTimer(CountdownHandle, this, &AFloorpieceQueue::TimerTick, TimerDelay, true, 0.0);
+}
+
+void AFloorpieceQueue::StateChanged_EndGameSequence()
+{
+	IHermitStateChangedInterface::StateChanged_EndGameSequence();
+}
+
+void AFloorpieceQueue::StateChanged_ScoreTable()
+{
+	IHermitStateChangedInterface::StateChanged_ScoreTable();
 }
 
 // Called every frame
@@ -53,6 +72,6 @@ void AFloorpieceQueue::TimerTick()
 	AFloorpiece* SpawnedActor;
 	Queue->Dequeue(SpawnedActor);
 
-	SpawnedActor->AddActorWorldOffset({ QueueLength * SpawnedActor->MeshBoundsX, 0,0 });
+	SpawnedActor->AddActorWorldOffset({ 0, QueueLength * SpawnedActor->MeshBoundsY,0 });
 	Queue->Enqueue(SpawnedActor);
 }
