@@ -30,4 +30,6 @@ public:
 
 	float MeshBoundsY = 50;
 
+	void MoveFloorpiece(FVector NewLocation);
+
 };

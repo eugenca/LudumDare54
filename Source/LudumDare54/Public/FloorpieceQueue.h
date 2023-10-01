@@ -9,6 +9,8 @@
 #include "Gameplay/HermitStateChangedInterface.h"
 #include "FloorpieceQueue.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloorpieceMoved, AFloorpiece*, Floorpiece);
+
 UCLASS()
 class LUDUMDARE54_API AFloorpieceQueue : public AActor, public IHermitStateChangedInterface
 {
@@ -28,6 +30,9 @@ protected:
 
 	// Begin IHermitStateChangedInterface Interface
 public:
+	UPROPERTY(BlueprintAssignable)
+		FOnFloorpieceMoved OnFloorpieceMoved;
+
 	UFUNCTION() virtual void StateChanged(EHermitGameplayState NewState, EHermitGameplayState OldState) override { StateChangedImplementation(NewState, OldState); }
 protected:
 	virtual void StateChanged_MainMenu() override;

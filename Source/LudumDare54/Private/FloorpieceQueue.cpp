@@ -15,7 +15,9 @@ AFloorpiece* AFloorpieceQueue::Spawn(float indexMult)
 	if (IsValid(SpawnedActor))
 	{
 		UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %s"), *SpawnedActor->GetName());
-		SpawnedActor->AddActorWorldOffset({ 0, indexMult * SpawnedActor->MeshBoundsY,0 });
+
+		OnFloorpieceMoved.Broadcast(SpawnedActor);
+		SpawnedActor->MoveFloorpiece({ 0, indexMult * SpawnedActor->MeshBoundsY,0 });
 	}
 	
 	return SpawnedActor;
@@ -69,9 +71,10 @@ void AFloorpieceQueue::Tick(float DeltaTime)
 
 void AFloorpieceQueue::TimerTick()
 {
-	AFloorpiece* SpawnedActor;
-	Queue->Dequeue(SpawnedActor);
+	AFloorpiece* ActorToMove;
+	Queue->Dequeue(ActorToMove);
 
-	SpawnedActor->AddActorWorldOffset({ 0, QueueLength * SpawnedActor->MeshBoundsY,0 });
-	Queue->Enqueue(SpawnedActor);
+	OnFloorpieceMoved.Broadcast(ActorToMove);
+	ActorToMove->MoveFloorpiece({ 0,  QueueLength * ActorToMove->MeshBoundsY,0 });
+	Queue->Enqueue(ActorToMove);
 }

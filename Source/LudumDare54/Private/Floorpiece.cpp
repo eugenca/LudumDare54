@@ -38,3 +38,7 @@ void AFloorpiece::Tick(float DeltaTime)
 
 }
 
+void AFloorpiece::MoveFloorpiece(FVector NewLocation)
+{
+	AddActorWorldOffset(NewLocation);
+}
