@@ -5,22 +5,50 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 #include "Ludum54GM.h"
-#include "HermitPlayerController.h"
+#include "Gameplay/HermitMapController.h"
+#include "Characters/HermitPlayer.h"
 
 AHermitCamera::AHermitCamera()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+
+	// Make the scene component the root component
+	RootComponent = SceneComponent;
+
+	CameraSpring = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpring"));
+	CameraSpring->SetupAttachment(SceneComponent);
+
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	Camera->FieldOfView = 90.0f;
+	Camera->bConstrainAspectRatio = true;
+	Camera->AspectRatio = 1.777778f;
+	Camera->PostProcessBlendWeight = 1.0f;
+
+	Camera->SetupAttachment(CameraSpring, USpringArmComponent::SocketName);
+
+	CurrentCameraHeight = DefaultCameraHeight;
 }
 
 void AHermitCamera::BeginPlay()
 {
+	// If we find a matching PC, bind to it immediately.
+	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (PC)
+	{
+		PC->SetViewTarget(this);
+	}
+
 	Super::BeginPlay();
 
 	if (!MainMenuTransformTarget)
 	{
-		UE_LOG(LogHermit, Error, TEXT("AHermitCamera: No Transform Target provided!"));
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::BeginPlay: No Transform Target provided!"));
 		return;
 	}
 
@@ -28,12 +56,16 @@ void AHermitCamera::BeginPlay()
 
 	if (!GameMode)
 	{
-		UE_LOG(LogHermit, Error, TEXT("AHermitCamera: Failed to get gamemode!"));
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::BeginPlay: Failed to get gamemode!"));
 		return;
 	}
 
 	// Subscribe to state change event and initialize initial state
 	InitializeStateChange(this, GameMode);
+
+	//UCameraComponent* Camera = GetCameraComponent();
+	CurrentCameraHeight = DefaultCameraHeight;
+	CameraHeightRatio = 1. / FMath::Tan(FMath::DegreesToRadians(Camera->FieldOfView * 0.5));
 }
 
 void AHermitCamera::Tick(float DeltaSeconds)
@@ -43,40 +75,58 @@ void AHermitCamera::Tick(float DeltaSeconds)
 		return;
 	}
 
+	check(ActorToFollow);
+	
 
-}
+	ALudum54GM* GameMode = Cast<ALudum54GM>(UGameplayStatics::GetGameMode(this));
 
-/*
-void AHermitCamera::StateChanged(EHermitGameplayState NewState, EHermitGameplayState OldState)
-{
-	switch (NewState)
+	if (!GameMode)
 	{
-	case MainMenu:
-		SetActorTransform(MainMenuTransformTarget->GetTransform());
-		break;
-	case PlayingCharacter:
-		SetupPlaying();
-		break;
-	case EndGameSequence:
-		// todo: change this
-		SetActorTransform(MainMenuTransformTarget->GetTransform());
-		break;
-	case ScoreTable:
-		// todo: change this
-		SetActorTransform(MainMenuTransformTarget->GetTransform());
-		break;
-	case End:
-	default:
-		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::StateChanged Invalid NewState!"));
-		break;
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::Tick: Failed to get gamemode!"));
+		return;
 	}
 
+	AHermitMapController* MapController = GameMode->MapController;
+
+	if (!MapController)
+	{
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::Tick: Failed to get MapController!"));
+		return;
+	}
+
+	auto* Character = Cast<AHermitPlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
+
+	if (!Character)
+	{
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::Tick: Failed to get Character!"));
+		return;
+	}
+
+	//UCameraComponent* Camera = GetCameraComponent();
+
+	const double CharacterConstrainRadius = Character->BaseInteractRadius * Character->CurrentHermitScale;
+
+	const double HalfSizeX = MapController->CameraViewBox.GetSize().X * 0.5 + CharacterConstrainRadius;
+	
+	CurrentCameraHeight = HalfSizeX * CameraHeightRatio;
+
+	//TrackedPosition = MapController->CameraViewBox.GetCenter() + FVector(0., 0., CurrentCameraHeight);
+
+	FTransform Transform = GetActorTransform();
+	Transform.SetLocation(MapController->CameraViewBox.GetCenter() + FVector(0., 0., CurrentCameraHeight));
+	SetActorTransform(Transform);
 }
-*/
+
+//USceneComponent* AHermitCamera::GetDefaultAttachComponent() const
+//{
+//	return Camera;
+//}
 
 void AHermitCamera::StateChanged_MainMenu()
 {
 	SetActorTransform(MainMenuTransformTarget->GetTransform());
+	//CameraRotation = FQuat();
+	SetActorRotation(FQuat());
 }
 
 void AHermitCamera::StateChanged_PlayingCharacter()
@@ -98,14 +148,20 @@ void AHermitCamera::StateChanged_PlayingCharacter()
 	}
 
 	ActorToFollow = Character;
+	//CameraRotation = FQuat(FRotator(-90., 0, 90.));
+	SetActorRotation(FQuat(FRotator(-90., 0, 90.)));
 }
 
 void AHermitCamera::StateChanged_EndGameSequence()
 {
 	SetActorTransform(MainMenuTransformTarget->GetTransform());
+	//CameraRotation = FQuat();
+	SetActorRotation(FQuat());
 }
 
 void AHermitCamera::StateChanged_ScoreTable()
 {
 	SetActorTransform(MainMenuTransformTarget->GetTransform());
+	//CameraRotation = FQuat();
+	SetActorRotation(FQuat());
 }
