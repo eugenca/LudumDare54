@@ -4,11 +4,6 @@
 #include "Floorpiece.h"
 
 #include "Components/BoxComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Kismet/KismetMathLibrary.h"
-
-using MathLib = UKismetMathLibrary;
-using SysLib = UKismetSystemLibrary;
 
 // Sets default values
 AFloorpiece::AFloorpiece()
@@ -56,22 +51,6 @@ void AFloorpiece::Tick(float DeltaTime)
 void AFloorpiece::MoveFloorpiece(FVector NewLocation)
 {
 	AddActorWorldOffset(NewLocation);
-	FVector Origin;
-	FVector Extent;
-	float Radius;
-
-	SysLib::GetComponentBounds(BoxComponent, Origin, Extent, Radius);
-
-	TArray<FVector> Points;
-	for (int i = 0; i < PickupCount; ++i)
-	{
-		Points.AddUnique(MathLib::RandomPointInBoundingBox(Origin, Extent));
-	}
-
-	UWorld* MyLevel = GetWorld();
-	/*if (!IsValid(BaseObject) || !IsValid(MyLevel)) return;
 
 
-
-	AFloorpiece* SpawnedActor = MyLevel->SpawnActor<AFloorpiece>(BaseObject, SpawnTransform);*/
 }
