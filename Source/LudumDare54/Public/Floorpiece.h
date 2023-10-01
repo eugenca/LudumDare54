@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Gameplay/ShellActor.h"
 #include "Floorpiece.generated.h"
 
 class UBoxComponent;
@@ -20,8 +21,11 @@ class LUDUMDARE54_API AFloorpiece : public AActor
 	UPROPERTY(Category = Setup, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(Category = Setup, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Category = Setup, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 PickupCount = 10;
+
+	UPROPERTY(Category = Setup, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<AHermitShellActor> BaseObject;
 
 public:	
 	// Sets default values for this actor's properties
@@ -33,7 +37,7 @@ protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
-	//STArray<FVector> Points;
+	TArray<AHermitShellActor*> Pickups;
 
 public:	
 	// Called every frame

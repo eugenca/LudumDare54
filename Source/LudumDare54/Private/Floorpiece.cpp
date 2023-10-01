@@ -62,16 +62,21 @@ void AFloorpiece::MoveFloorpiece(FVector NewLocation)
 
 	SysLib::GetComponentBounds(BoxComponent, Origin, Extent, Radius);
 
-	TArray<FVector> Points;
-	for (int i = 0; i < PickupCount; ++i)
-	{
-		Points.AddUnique(MathLib::RandomPointInBoundingBox(Origin, Extent));
-	}
-
 	UWorld* MyLevel = GetWorld();
-	/*if (!IsValid(BaseObject) || !IsValid(MyLevel)) return;
+	FVector RandomPoint;
+	for (int i = 0; i < PickupCount; ++i)
+	{		
+		if (!IsValid(BaseObject) || !IsValid(MyLevel)) continue;
+		if (Pickups.Num() < PickupCount)
+		{
+			AHermitShellActor* SpawnedActor = MyLevel->SpawnActor<AHermitShellActor>(BaseObject);
+			Pickups.AddUnique(SpawnedActor);
+		}
+		
 
-
-
-	AFloorpiece* SpawnedActor = MyLevel->SpawnActor<AFloorpiece>(BaseObject, SpawnTransform);*/
+		RandomPoint = MathLib::RandomPointInBoundingBox(Origin, Extent);
+		
+		UE_LOG(LogTemp, Log, TEXT("SPAWN Num: %d| x: %f  y: %f z: %f"), Pickups.Num(), RandomPoint.X, RandomPoint.Y, RandomPoint.Z);
+		Pickups[i]->SetActorLocation(RandomPoint);
+	}
 }
