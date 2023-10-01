@@ -5,7 +5,7 @@
 
 
 // Sets default values
-AShellActor::AShellActor()
+AHermitShellActor::AHermitShellActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -13,14 +13,14 @@ AShellActor::AShellActor()
 }
 
 // Called when the game starts or when spawned
-void AShellActor::BeginPlay()
+void AHermitShellActor::BeginPlay()
 {
 	Super::BeginPlay();
 
 }
 
 // Called every frame
-void AShellActor::Tick(float DeltaTime)
+void AHermitShellActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

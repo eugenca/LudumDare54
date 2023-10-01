@@ -61,22 +61,46 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	void ResetCharacter();
+
 public:
+
+	// Crab growth
 	// Scale from 1 to x
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HermitProperties)
-	double CurrentHermitScale = 1.f;
+	double DefaultHermitScale = 1.f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HermitProperties)
+	double CurrentHermitScale;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	double HermitGrowthRate = 0.1f;
 
-	
+	// Crab size
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	float BaseCollisionRadius = 20.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	float BaseInteractRadius = 25.f;
 
+	// Crab Speed
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	float HermitSpeedScale = 0.5f;
 
+	// Crab time to live
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HermitProperties)
+	float TimeLeftToDieWithoutShell;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
+	float DefaultTimeToDieWithoutShell = 8.f;
+
+
+	// Crab meshes
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
+	class USkeletalMeshComponent* CrabMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
+	class UHermitShell* Shell = nullptr;
+	
 };
