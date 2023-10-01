@@ -3,6 +3,31 @@
 
 #include "FloorpieceQueue.h"
 
+AFloorpiece* AFloorpieceQueue::Spawn(float indexMult)
+{
+	UWorld* MyLevel = GetWorld();
+
+	if (!IsValid(BaseObject) || !IsValid(MyLevel))
+	{
+		return nullptr;
+	}
+
+	// You can determine the spawned Actor's initial location, rotation and scale.
+		// Here we're just setting it to the spawner's transform.
+		// NOTE: depending on your Actor settings, this could prevent spawning if the location is obstructed!
+	FTransform SpawnTransform = GetActorTransform();
+
+	AFloorpiece* SpawnedActor = MyLevel->SpawnActor<AFloorpiece>(BaseObject, SpawnTransform);
+	if (IsValid(SpawnedActor))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %s"), *SpawnedActor->GetName());
+	}
+	PresentXLocation = indexMult * SpawnedActor->MeshBoundsX;
+	SpawnedActor->AddActorWorldOffset({ indexMult * SpawnedActor->MeshBoundsX, 0,0 });
+	
+	return SpawnedActor;
+}
+
 // Sets default values
 AFloorpieceQueue::AFloorpieceQueue()
 {
@@ -15,17 +40,16 @@ void AFloorpieceQueue::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UWorld* MyLevel = GetWorld();
-
-	if (!IsValid(BaseObject))
-	{
-		return;
-	}
-
 	for (int i = 0; i < QueueLength; ++i)
 	{
-		
+		AFloorpiece* Floorpiece = Spawn(i);
+		if (Floorpiece)
+		{
+			Queue->Enqueue(Floorpiece);
+		}
 	}
+
+	GetWorldTimerManager().SetTimer(CountdownHandle, this, &AFloorpieceQueue::TimerTick, 1, true, 0.0);
 }
 
 // Called every frame
@@ -35,3 +59,11 @@ void AFloorpieceQueue::Tick(float DeltaTime)
 
 }
 
+void AFloorpieceQueue::TimerTick()
+{
+	AFloorpiece* SpawnedActor;
+	Queue->Dequeue(SpawnedActor);
+
+	SpawnedActor->AddActorWorldOffset({ QueueLength * SpawnedActor->MeshBoundsX, 0,0 });
+	Queue->Enqueue(SpawnedActor);
+}
