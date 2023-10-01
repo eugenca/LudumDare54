@@ -25,6 +25,15 @@ AHermitPlayer::AHermitPlayer()
 	TimeLeftToDieWithoutShell = DefaultTimeToDieWithoutShell;
 }
 
+void AHermitPlayer::EquipShell(UHermitShell* InShell)
+{
+	// TODO: Animations?
+
+	Shell = nullptr;
+
+	Shell = InShell;
+}
+
 // Called when the game starts or when spawned
 void AHermitPlayer::BeginPlay()
 {
@@ -119,8 +128,11 @@ void AHermitPlayer::Tick(float DeltaTime)
 		MapController->CurrentPosition + MapController->CurrentVerticalSize - CurrentRadius);
 	SetActorLocation(MyLocation);
 
-	TimeLeftToDieWithoutShell -= DeltaTime;
-	
+	if (!Shell)
+	{
+		TimeLeftToDieWithoutShell -= DeltaTime;
+	}
+
 	if (TimeLeftToDieWithoutShell < 0.f)
 	{
 		GameMode->SetGameplayState(EHermitGameplayState::EndGameSequence);
