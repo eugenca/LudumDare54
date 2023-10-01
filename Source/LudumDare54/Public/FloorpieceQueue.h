@@ -18,27 +18,29 @@ class LUDUMDARE54_API AFloorpieceQueue : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AFloorpieceQueue();
-	void TimerTick();
-
+	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Setup)
-	TSubclassOf<AFloorpiece> BaseObject;
+	// - Queue
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Queue")
+		TSubclassOf<AFloorpiece> BaseObject;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Queue")
+		int32 QueueLength = 5;
 
 	TQueue<AFloorpiece*, EQueueMode::Mpsc>* Queue = new TQueue<AFloorpiece*, EQueueMode::Mpsc>;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Setup)
-	int32 QueueLength = 5;
+	// - Timer
+
+	void TimerTick();
 
 	FTimerHandle CountdownHandle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		float PresentXLocation = 0;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	float TimerDelay = 1;
 };
