@@ -28,6 +28,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	float MeshBoundsX = 50;
+	float MeshBoundsY = 50;
 
 };

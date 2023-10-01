@@ -26,8 +26,8 @@ void AFloorpiece::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 	if (IsValid(Mesh))
 	{
-		MeshBoundsX = Mesh->Bounds.BoxExtent.X * 2;
-		UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %f"), MeshBoundsX);
+		MeshBoundsY = Mesh->Bounds.BoxExtent.Y * 2;
+		UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %f"), MeshBoundsY);
 	}
 }
 
