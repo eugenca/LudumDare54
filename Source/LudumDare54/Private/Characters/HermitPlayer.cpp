@@ -146,7 +146,7 @@ void AHermitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void AHermitPlayer::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	const FVector2D MovementVector = Value.Get<FVector2D>();
+	const FVector2D MovementVector = Value.Get<FVector2D>() * HermitSpeedScale;
 	FRotator r = GetControlRotation();
 
 	const FVector v = KML::GetRightVector({ 0, r.Roll, r.Yaw });
