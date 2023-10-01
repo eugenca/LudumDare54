@@ -33,6 +33,8 @@ public:
 	// Sets default values for this character's properties
 	AHermitPlayer();
 
+	void EquipShell(class UHermitShell* Shell);
+
 protected:
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
@@ -99,6 +101,9 @@ public:
 	// Crab meshes
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
 	class USkeletalMeshComponent* CrabMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
+	class UStaticMeshComponent* ShellMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
 	class UHermitShell* Shell = nullptr;
