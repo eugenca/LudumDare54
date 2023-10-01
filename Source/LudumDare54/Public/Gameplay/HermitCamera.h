@@ -11,7 +11,7 @@
 #include "HermitCamera.generated.h"
 
 UCLASS()
-class LUDUMDARE54_API AHermitCamera : public ACameraActor, public IHermitStateChangedInterface
+class LUDUMDARE54_API AHermitCamera : public AActor, public IHermitStateChangedInterface
 {
 	GENERATED_BODY()
 
@@ -22,6 +22,7 @@ protected:
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	//virtual USceneComponent* GetDefaultAttachComponent() const;
 	// End AActor Interface
 
 	// Begin IHermitStateChangedInterface Interface
@@ -42,14 +43,23 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
 	double DefaultCameraHeight = 300.;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
-	//double CameraViewBoxXAdditionToIncreaseHeight = 50.;
+protected:
 
-private:
-	double CameraHeightRatio;
-	double CurrentCameraHeight;
+	UPROPERTY(BlueprintReadOnly, Category = HermitCamera)
+	FVector TrackedPosition;
+
+	UPROPERTY(BlueprintReadOnly, Category = HermitCamera)
+	FQuat CameraRotation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HermitCamera)
+	class USceneComponent* SceneComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HermitCamera)
+	class UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HermitCamera)
+	class USpringArmComponent* CameraSpring;
 
 private:
 	AActor* ActorToFollow = nullptr;
-
+	double CameraHeightRatio;
+	double CurrentCameraHeight;
 };

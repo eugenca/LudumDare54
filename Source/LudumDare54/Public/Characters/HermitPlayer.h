@@ -76,4 +76,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	float BaseInteractRadius = 25.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
+	float HermitSpeedScale = 0.5f;
+
 };
