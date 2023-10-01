@@ -154,9 +154,9 @@ void AHermitCamera::StateChanged_PlayingCharacter()
 
 void AHermitCamera::StateChanged_EndGameSequence()
 {
-	SetActorTransform(MainMenuTransformTarget->GetTransform());
+	//SetActorTransform(MainMenuTransformTarget->GetTransform());
 	//CameraRotation = FQuat();
-	SetActorRotation(FQuat());
+	//SetActorRotation(FQuat());
 }
 
 void AHermitCamera::StateChanged_ScoreTable()
