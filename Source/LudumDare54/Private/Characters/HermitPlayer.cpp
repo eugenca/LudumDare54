@@ -22,6 +22,7 @@ using EIC = UEnhancedInputComponent;
 AHermitPlayer::AHermitPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	TimeLeftToDieWithoutShell = DefaultTimeToDieWithoutShell;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +58,7 @@ void AHermitPlayer::BeginPlay()
 
 	// Subscribe to state change event and initialize initial state
 	InitializeStateChange(this, GameMode);
+	ResetCharacter();
 }
 
 void AHermitPlayer::StateChanged_MainMenu()
@@ -65,6 +67,7 @@ void AHermitPlayer::StateChanged_MainMenu()
 
 void AHermitPlayer::StateChanged_PlayingCharacter()
 {
+	ResetCharacter();
 }
 
 void AHermitPlayer::StateChanged_EndGameSequence()
@@ -116,7 +119,12 @@ void AHermitPlayer::Tick(float DeltaTime)
 		MapController->CurrentPosition + MapController->CurrentVerticalSize - CurrentRadius);
 	SetActorLocation(MyLocation);
 
+	TimeLeftToDieWithoutShell -= DeltaTime;
 	
+	if (TimeLeftToDieWithoutShell < 0.f)
+	{
+		GameMode->SetGameplayState(EHermitGameplayState::EndGameSequence);
+	}
 
 }
 
@@ -143,8 +151,19 @@ void AHermitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	}
 }
 
+void AHermitPlayer::ResetCharacter()
+{
+	CurrentHermitScale = DefaultHermitScale;
+	TimeLeftToDieWithoutShell = DefaultTimeToDieWithoutShell;
+	Shell = nullptr;
+}
+
 void AHermitPlayer::Move(const FInputActionValue& Value)
 {
+	if (!GetIsPlayingCharacter())
+	{
+		return;
+	}
 	// input is a Vector2D
 	const FVector2D MovementVector = Value.Get<FVector2D>() * HermitSpeedScale;
 	FRotator r = GetControlRotation();
