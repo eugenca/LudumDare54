@@ -47,7 +47,14 @@ SourceArt/**/*.tga
 
 # Binary Files
 Binaries/*
+!Binaries/Win64
+Binaries/Win64/*
 Plugins/*/Binaries/*
+
+# Binaries we want to version
+!Binaries/Win64/UnrealEditor-LudumDare54.dll
+!Binaries/Win64/LudumDare54Editor.target
+!Binaries/Win64/UnrealEditor.modules
 
 # Builds
 Build/*

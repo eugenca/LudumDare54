@@ -36,10 +36,14 @@ protected:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = StatePlacement)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
 	AActor* MainMenuTransformTarget;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
+	double DefaultCameraHeight = 300.;
 
+	double CameraHeightRatio;
+	double CurrentCameraHeight;
 
 private:
 	AActor* ActorToFollow = nullptr;
