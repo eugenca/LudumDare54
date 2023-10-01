@@ -9,6 +9,9 @@
 #include "HermitMapController.generated.h"
 
 
+
+// TODO: Do we really need AInfo, or we can do just UObject?
+
 UCLASS(Blueprintable)
 class LUDUMDARE54_API AHermitMapController : public AInfo, public IHermitStateChangedInterface 
 {
@@ -44,12 +47,21 @@ public:
 	class UCurveFloat* VerticalScaleCurve = nullptr;
 
 	// Bottomest playable position, that we can't view or move under. Increasing with UpwardMovementRate speed
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = MapController)
 	double CurrentPosition = 0.f;
 
 	// Vertical size of playable space. Scales according to VerticalScaleCurve depending on scale of the crab
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = MapController)
 	double CurrentVerticalSize;
+
+	UPROPERTY(BlueprintReadOnly, Category = MapController)
+	FBox CameraViewBox;
+
+	// TODO: obtain from appropriate source
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = MapController)
+	double HorizontalSize = 2000;
+
+	
 
 	class AHermitPlayer* PlayerCharacter;
 

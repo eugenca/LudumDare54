@@ -52,37 +52,40 @@ void AHermitMapController::Tick(float DeltaSeconds)
 	check(PlayerCharacter);
 	check(VerticalScaleCurve);
 
+	const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
+	const double Ratio = ViewportSize.X / ViewportSize.Y;
+
 	CurrentPosition += UpwardMovementRate * DeltaSeconds;
 	CurrentVerticalSize = VerticalScaleCurve->GetFloatValue(PlayerCharacter->CurrentHermitScale);
+	
+	if (CurrentVerticalSize * Ratio > HorizontalSize)
+	{
+		CurrentVerticalSize = HorizontalSize / Ratio;
+	}
+
+	const FVector PlayerLocation = PlayerCharacter->GetActorLocation();
+
+	
+	UE_LOG(LogHermit, Log, TEXT("%s"), *ViewportSize.ToString());
+
+	const FBox CameraSpaceBox(
+		FVector(0.,				CurrentPosition,					   0./*DebugZCoord*/),
+		FVector(HorizontalSize, CurrentPosition + CurrentVerticalSize, 0./*DebugZCoord*/));
+
+	const FVector CameraViewBoxHalfDiagonalVector(CurrentVerticalSize * 0.5 * Ratio, CurrentVerticalSize * 0.5, 0.);
+
+	const double DesiredLocationForCameraX = FMath::Clamp(PlayerLocation.X, CameraViewBoxHalfDiagonalVector.X, HorizontalSize - CameraViewBoxHalfDiagonalVector.X);
+	const double DesiredLocationForCameraY = CurrentPosition + CurrentVerticalSize * 0.5;
+	const FVector DesiredLocationForCamera(DesiredLocationForCameraX, DesiredLocationForCameraY, 0./*DebugZCoord*/);
+	CameraViewBox =
+		FBox(DesiredLocationForCamera - CameraViewBoxHalfDiagonalVector,
+			DesiredLocationForCamera + CameraViewBoxHalfDiagonalVector);
 
 #if WITH_EDITORONLY_DATA
-
 	UWorld* World = GetWorld();
 	FlushPersistentDebugLines(World);
-
 	if (bDrawDebugCameraSpace)
 	{
-		const FVector PlayerLocation = PlayerCharacter->GetActorLocation();
-
-		const FVector2D ViewportSize = FVector2D(GEngine->GameViewport->Viewport->GetSizeXY());
-		const double Ratio = ViewportSize.X / ViewportSize.Y;
-		UE_LOG(LogHermit, Log, TEXT("%s"), *ViewportSize.ToString());
-
-		ensure(false); // Get Size from actual place
-		const double HorizontalSize = 3000;
-
-		const FBox CameraSpaceBox(
-			FVector(0.,				CurrentPosition,					   DebugZCoord),
-			FVector(HorizontalSize, CurrentPosition + CurrentVerticalSize, DebugZCoord));
-
-		const FVector CameraViewBoxHalfDiagonalVector(CurrentVerticalSize * 0.5 * Ratio, CurrentVerticalSize * 0.5, 0.);
-
-		const FVector DesiredLocationForCamera(PlayerLocation.X, CurrentPosition + CurrentVerticalSize * 0.5, DebugZCoord);
-		FBox CameraViewBox =
-			FBox(DesiredLocationForCamera - CameraViewBoxHalfDiagonalVector,
-				DesiredLocationForCamera + CameraViewBoxHalfDiagonalVector);
-
-
 
 		FVector CameraSpaceBoxTopLeft = CameraSpaceBox.Min + FVector(0., CameraSpaceBox.GetSize().Y, 0.);
 		FVector CameraSpaceBoxBottomRight = CameraSpaceBox.Min + FVector(CameraSpaceBox.GetSize().X, 0., 0.);
@@ -91,6 +94,7 @@ void AHermitMapController::Tick(float DeltaSeconds)
 		DrawDebugLine(World, CameraSpaceBox.Max, CameraSpaceBoxBottomRight, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
 		DrawDebugLine(World, CameraSpaceBoxBottomRight, CameraSpaceBox.Min, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
 
+		CameraViewBox = CameraViewBox.ExpandBy(-DebugLineThickness);
 		FVector CameraViewBoxTopLeft = CameraViewBox.Min + FVector(0., CameraViewBox.GetSize().Y, 0.);
 		FVector CameraViewBoxBottomRight = CameraViewBox.Min + FVector(CameraViewBox.GetSize().X, 0., 0.);
 		DrawDebugLine(World, CameraViewBox.Min, CameraViewBoxTopLeft, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
@@ -98,9 +102,6 @@ void AHermitMapController::Tick(float DeltaSeconds)
 		DrawDebugLine(World, CameraViewBox.Max, CameraViewBoxBottomRight, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
 		DrawDebugLine(World, CameraViewBoxBottomRight, CameraViewBox.Min, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
 	}
-
-	// UPROPERTY(EditAnywhere, Category = MapContoller)
-	// bool bDrawDebugCameraSpace = false;
 #endif
 
 }
