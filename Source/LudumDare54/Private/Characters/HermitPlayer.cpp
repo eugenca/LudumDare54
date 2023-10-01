@@ -13,6 +13,7 @@
 
 #include "Ludum54GM.h"
 #include "Gameplay/HermitMapController.h"
+#include "Gameplay/ShellActor.h"
 
 using KML = UKismetMathLibrary;
 using EIC = UEnhancedInputComponent;
@@ -32,6 +33,7 @@ void AHermitPlayer::EquipShell(UHermitShell* InShell)
 	Shell = nullptr;
 
 	Shell = InShell;
+	ShellMesh->SetStaticMesh(Shell->ShellMesh);
 }
 
 // Called when the game starts or when spawned
