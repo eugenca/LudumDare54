@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Camera\CameraComponent.h"
 
 #include "Ludum54GM.h"
 #include "HermitPlayerController.h"
@@ -43,7 +44,21 @@ void AHermitCamera::Tick(float DeltaSeconds)
 		return;
 	}
 
+	/*if (!ActorToFollow)
+	{
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::Tick: ActorToFollow is nullptr!"));
+		return;
+	}*/
+	check(ActorToFollow);
+	
 
+	UCameraComponent* Camera = GetCameraComponent();
+
+	FTransform Transform = ActorToFollow->GetTransform();
+	Transform.SetLocation(Transform.GetLocation() + FVector(0, 0, 300));
+	Transform.SetRotation(FQuat(FRotator(-90., 0, 0)));
+
+	SetActorTransform(Transform);
 }
 
 /*

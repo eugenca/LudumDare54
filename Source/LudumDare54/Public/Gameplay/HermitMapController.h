@@ -4,17 +4,19 @@
 
 #include "CoreMinimal.h"
 
-
 #include "Gameplay/HermitStateChangedInterface.h"
-
 
 #include "HermitMapController.generated.h"
 
 
-UCLASS()
+UCLASS(Blueprintable)
 class LUDUMDARE54_API AHermitMapController : public AInfo, public IHermitStateChangedInterface 
 {
 	GENERATED_BODY()
+
+public:
+
+	AHermitMapController();
 
 protected:
 	// Begin AActor Interface
@@ -43,10 +45,29 @@ public:
 
 	// Bottomest playable position, that we can't view or move under. Increasing with UpwardMovementRate speed
 	UPROPERTY(BlueprintReadOnly)
-	float CurrentPosition = 0.f;
+	double CurrentPosition = 0.f;
 
 	// Vertical size of playable space. Scales according to VerticalScaleCurve depending on scale of the crab
 	UPROPERTY(BlueprintReadOnly)
-	float CurrentVerticalSize;
+	double CurrentVerticalSize;
+
+	class AHermitPlayer* PlayerCharacter;
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, Category = MapContollerDebugDraw)
+	bool bDrawDebugCameraSpace = false;
+
+	UPROPERTY(EditAnywhere, Category = MapContollerDebugDraw)
+	float DebugLineThickness = 2.f;
+
+	UPROPERTY(EditAnywhere, Category = MapContollerDebugDraw)
+	double DebugZCoord = 50.f;
+
+	UPROPERTY(EditAnywhere, Category = MapContollerDebugDraw)
+	FColor DebugCameraSpaceBoxColor = FColor::Red;
+
+	UPROPERTY(EditAnywhere, Category = MapContollerDebugDraw)
+	FColor CameraViewBoxColor = FColor::Blue;
+#endif
 
 };

@@ -22,12 +22,24 @@ protected:
 	TEnumAsByte<EHermitGameplayState> State = EHermitGameplayState::MainMenu;
 
 public:
-	UPROPERTY(BlueprintAssignable)
-	FOnGameplayStateChangedSignature OnGameplayStateChanged;
+
+	virtual void StartPlay() override;
+
+public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input Mode")
 	void SetGameplayState(EHermitGameplayState NewState);
 
 	UFUNCTION(BlueprintPure, Category = "Input Mode")
 	EHermitGameplayState GetGameplayState() { return State.GetValue(); };
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnGameplayStateChangedSignature OnGameplayStateChanged;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Hermit)
+	TSubclassOf<class AHermitMapController> MapControllerClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = Hermit)
+	class AHermitMapController* MapController;
 };

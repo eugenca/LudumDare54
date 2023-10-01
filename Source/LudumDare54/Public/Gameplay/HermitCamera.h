@@ -39,8 +39,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = StatePlacement)
 	AActor* MainMenuTransformTarget;
 
-
-
 private:
 	AActor* ActorToFollow = nullptr;
 

@@ -35,10 +35,17 @@ protected:
 	/** Called for looking input */
 	void Interact(const FInputActionValue& Value);
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+	// Scale from 1 to x
+	UPROPERTY(BlueprintReadWrite, Category = HermitProperties)
+	float CurrentHermitScale = 1.f;
+
+
 };
