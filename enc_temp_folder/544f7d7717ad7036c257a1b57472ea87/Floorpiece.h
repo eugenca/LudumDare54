@@ -19,10 +19,7 @@ class LUDUMDARE54_API AFloorpiece : public AActor
 
 	UPROPERTY(Category = Setup, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* Mesh;
-
-	UPROPERTY(Category = Setup, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	int32 PickupCount = 10;
-
+	
 public:	
 	// Sets default values for this actor's properties
 	AFloorpiece();
@@ -32,8 +29,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
-
-	//STArray<FVector> Points;
 
 public:	
 	// Called every frame
