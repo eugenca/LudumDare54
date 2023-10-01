@@ -10,16 +10,25 @@ AFloorpiece::AFloorpiece()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetSimulatePhysics(true);
-	Mesh->SetNotifyRigidBodyCollision(true);
+	Mesh->SetSimulatePhysics(false);
 	RootComponent = Mesh;
+
+	
 }
 
 // Called when the game starts or when spawned
 void AFloorpiece::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+}
+
+void AFloorpiece::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	MeshBoundsX = Mesh->Bounds.BoxExtent.X * 2;
+	UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %f"), MeshBoundsX);
 }
 
 // Called every frame

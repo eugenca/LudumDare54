@@ -3,7 +3,7 @@
 
 #include "FloorpieceQueue.h"
 
-AFloorpiece* AFloorpieceQueue::Spawn()
+AFloorpiece* AFloorpieceQueue::Spawn(float indexMult)
 {
 	UWorld* MyLevel = GetWorld();
 
@@ -22,7 +22,9 @@ AFloorpiece* AFloorpieceQueue::Spawn()
 	{
 		UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %s"), *SpawnedActor->GetName());
 	}
-
+	PresentXLocation = indexMult * SpawnedActor->MeshBoundsX;
+	SpawnedActor->AddActorWorldOffset({ indexMult * SpawnedActor->MeshBoundsX, 0,0 });
+	
 	return SpawnedActor;
 }
 
@@ -40,8 +42,14 @@ void AFloorpieceQueue::BeginPlay()
 
 	for (int i = 0; i < QueueLength; ++i)
 	{
-		Spawn();
+		AFloorpiece* Floorpiece = Spawn(i);
+		if (Floorpiece)
+		{
+			Queue->Enqueue(Floorpiece);
+		}
 	}
+
+	GetWorldTimerManager().SetTimer(CountdownHandle, this, &AFloorpieceQueue::TimerTick, 1, true, 0.0);
 }
 
 // Called every frame
@@ -51,3 +59,11 @@ void AFloorpieceQueue::Tick(float DeltaTime)
 
 }
 
+void AFloorpieceQueue::TimerTick()
+{
+	AFloorpiece* SpawnedActor;
+	Queue->Dequeue(SpawnedActor);
+
+	SpawnedActor->AddActorWorldOffset({ QueueLength * SpawnedActor->MeshBoundsX, 0,0 });
+	Queue->Enqueue(SpawnedActor);
+}
