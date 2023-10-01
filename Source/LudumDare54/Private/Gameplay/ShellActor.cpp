@@ -9,6 +9,7 @@ AShellActor::AShellActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+
 }
 
 // Called when the game starts or when spawned

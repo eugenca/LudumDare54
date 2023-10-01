@@ -69,10 +69,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	double HermitGrowthRate = 0.1f;
 
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
-	double HermitGrowthCoefficient = 1.5f;
+	float BaseCollisionRadius = 20.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
-	FVector2D HermitHalfSize = {15., 15.};
+	float BaseInteractRadius = 25.f;
 
 };

@@ -9,11 +9,13 @@
 
 #include "Ludum54GM.h"
 #include "Gameplay/HermitMapController.h"
-#include "HermitPlayerController.h"
+#include "Characters/HermitPlayer.h"
 
 AHermitCamera::AHermitCamera()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+
 
 	CurrentCameraHeight = DefaultCameraHeight;
 }
@@ -58,7 +60,7 @@ void AHermitCamera::Tick(float DeltaSeconds)
 
 	if (!GameMode)
 	{
-		UE_LOG(LogHermit, Error, TEXT("AHermitPlayer::Tick: Failed to get gamemode!"));
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::Tick: Failed to get gamemode!"));
 		return;
 	}
 
@@ -66,13 +68,23 @@ void AHermitCamera::Tick(float DeltaSeconds)
 
 	if (!MapController)
 	{
-		UE_LOG(LogHermit, Error, TEXT("AHermitPlayer::Tick: Failed to get MapController!"));
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::Tick: Failed to get MapController!"));
 		return;
 	}
 
-	UCameraComponent* Camera = GetCameraComponent();
+	auto* Character = Cast<AHermitPlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
-	const double HalfSizeX = MapController->CameraViewBox.GetSize().X * 0.5;
+	if (!Character)
+	{
+		UE_LOG(LogHermit, Error, TEXT("AHermitCamera::Tick: Failed to get Character!"));
+		return;
+	}
+
+	//UCameraComponent* Camera = GetCameraComponent();
+
+	const double CharacterConstrainRadius = Character->BaseInteractRadius * Character->CurrentHermitScale;
+
+	const double HalfSizeX = MapController->CameraViewBox.GetSize().X * 0.5 + CharacterConstrainRadius;// + Character->;
 	
 	CurrentCameraHeight = HalfSizeX * CameraHeightRatio;
 
