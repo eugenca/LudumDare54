@@ -43,6 +43,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
 	double DefaultCameraHeight = 300.;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = HermitCameraParams)
+	double DefaultHeightStep = 80.;
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = HermitCamera)
@@ -62,4 +65,5 @@ private:
 	AActor* ActorToFollow = nullptr;
 	double CameraHeightRatio;
 	double CurrentCameraHeight;
+
 };

@@ -130,6 +130,11 @@ void AHermitPlayer::Tick(float DeltaTime)
 		MapController->CurrentPosition + MapController->CurrentVerticalSize - CurrentRadius);
 	SetActorLocation(MyLocation);
 
+	//CurrentDirection = FMath::VInterpTo(CurrentDirection, DesiredDirection, DeltaTime, HermitRotationSpeedDegrees);
+	CurrentDirection = FMath::VInterpNormalRotationTo(CurrentDirection, DesiredDirection, DeltaTime, HermitRotationSpeedDegrees);
+	UE_LOG(LogHermit, Warning, TEXT("Curr: %s, Desir: %s"), *CurrentDirection.ToString(), *DesiredDirection.ToString());
+	SetActorRotation(CurrentDirection.Rotation());
+
 	if (!Shell)
 	{
 		TimeLeftToDieWithoutShell -= DeltaTime;
@@ -139,7 +144,6 @@ void AHermitPlayer::Tick(float DeltaTime)
 	{
 		GameMode->SetGameplayState(EHermitGameplayState::EndGameSequence);
 	}
-
 }
 
 // Called to bind functionality to input
@@ -167,6 +171,8 @@ void AHermitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 void AHermitPlayer::ResetCharacter()
 {
+	CurrentDirection = FVector(FMath::RandRange(0., 1.), FMath::RandRange(0., 1.), 0.).GetSafeNormal();
+	DesiredDirection = CurrentDirection;
 	CurrentHermitScale = DefaultHermitScale;
 	TimeLeftToDieWithoutShell = DefaultTimeToDieWithoutShell;
 	Shell = nullptr;
@@ -180,6 +186,10 @@ void AHermitPlayer::Move(const FInputActionValue& Value)
 	}
 	// input is a Vector2D
 	const FVector2D MovementVector = Value.Get<FVector2D>() * HermitSpeedScale;
+
+	const FVector2D MovementVectorNormalized = MovementVector.GetSafeNormal();
+	DesiredDirection = FVector(MovementVectorNormalized.Y, MovementVectorNormalized.X, 0.);
+
 	FRotator r = GetControlRotation();
 
 	const FVector v = KML::GetRightVector({ 0, r.Roll, r.Yaw });
@@ -187,6 +197,8 @@ void AHermitPlayer::Move(const FInputActionValue& Value)
 
 	const FVector va = KML::GetForwardVector({ 0, 0, r.Yaw });
 	AddMovementInput(va, -MovementVector.X);
+
+	
 }
 
 void AHermitPlayer::Interact(const FInputActionValue& Value)

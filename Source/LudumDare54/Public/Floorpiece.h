@@ -43,7 +43,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	float MeshBoundsY = 50;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FloorPiece)
+	float MeshSizeX = 3500;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FloorPiece)
+	float MeshSizeY = 3500;
 
 	void MoveFloorpiece(FVector NewLocation);
 

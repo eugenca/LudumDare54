@@ -113,7 +113,7 @@ void AHermitCamera::Tick(float DeltaSeconds)
 	//TrackedPosition = MapController->CameraViewBox.GetCenter() + FVector(0., 0., CurrentCameraHeight);
 
 	FTransform Transform = GetActorTransform();
-	Transform.SetLocation(MapController->CameraViewBox.GetCenter() + FVector(0., 0., CurrentCameraHeight));
+	Transform.SetLocation(MapController->CameraViewBox.GetCenter() + FVector(0., 0., CurrentCameraHeight - FMath::Fmod(CurrentCameraHeight, DefaultHeightStep)));
 	SetActorTransform(Transform);
 }
 
@@ -126,7 +126,7 @@ void AHermitCamera::StateChanged_MainMenu()
 {
 	SetActorTransform(MainMenuTransformTarget->GetTransform());
 	//CameraRotation = FQuat();
-	SetActorRotation(FQuat());
+	SetActorRotation(FQuat(FRotator(0., 0, 0.)));
 }
 
 void AHermitCamera::StateChanged_PlayingCharacter()
@@ -163,5 +163,5 @@ void AHermitCamera::StateChanged_ScoreTable()
 {
 	SetActorTransform(MainMenuTransformTarget->GetTransform());
 	//CameraRotation = FQuat();
-	SetActorRotation(FQuat());
+	SetActorRotation(FQuat(FRotator(0., 0, 0.)));
 }

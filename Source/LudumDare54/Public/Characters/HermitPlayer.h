@@ -66,6 +66,10 @@ public:
 private:
 	void ResetCharacter();
 
+private:
+	FVector DesiredDirection;
+	FVector CurrentDirection;
+
 public:
 
 	// Crab growth
@@ -86,9 +90,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	float BaseInteractRadius = 25.f;
 
-	// Crab Speed
+	// Crab Movement
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	float HermitSpeedScale = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
+	float HermitRotationSpeedDegrees = 10.f;
 
 	// Crab time to live
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = HermitProperties)

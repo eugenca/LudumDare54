@@ -130,6 +130,8 @@ void AHermitMapController::StateChanged_PlayingCharacter()
 	}
 
 	UE_LOG(LogHermit, Warning, TEXT("AHermitMapController::StateChanged_PlayingCharacter success"));
+
+	ResetMap();
 	PlayerCharacter = Character;
 }
 
@@ -141,4 +143,9 @@ void AHermitMapController::StateChanged_EndGameSequence()
 void AHermitMapController::StateChanged_ScoreTable()
 {
 
+}
+
+void AHermitMapController::ResetMap()
+{
+	CurrentPosition = 0.f;
 }

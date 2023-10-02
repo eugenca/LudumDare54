@@ -37,6 +37,10 @@ protected:
 	virtual void StateChanged_ScoreTable() override;
 	// End IHermitStateChangedInterface Interface
 
+
+private:
+	void ResetMap();
+
 public:
 
 	// Rate of upward autoscrolling

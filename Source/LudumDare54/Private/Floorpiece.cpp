@@ -41,8 +41,19 @@ void AFloorpiece::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 	if (IsValid(Mesh))
 	{
-		MeshBoundsY = Mesh->Bounds.BoxExtent.Y * 2;
-		UE_LOG(LogTemp, Log, TEXT("Spawned successfully! New Actor: %f"), MeshBoundsY);
+		const FVector MeshBounds = Mesh->Bounds.BoxExtent * 2;
+
+		const double CoeffX = MeshSizeX / MeshBounds.X;
+		const double CoeffY = MeshSizeY / MeshBounds.Y;
+		FVector Coeff(CoeffX, CoeffY, 1.);
+
+		FVector Scale = Mesh->GetComponentScale();
+		Scale = Scale * Coeff;
+		Mesh->SetWorldScale3D(Scale);
+
+		const FVector MeshBounds2 = Mesh->Bounds.BoxExtent * 2;
+
+		UE_LOG(LogTemp, Log, TEXT("AFloorpiece::OnConstruction MeshBounds1: %s, MeshBounds2: %s"), *MeshBounds.ToString(), *MeshBounds2.ToString());
 	}
 }
 
@@ -67,14 +78,15 @@ void AFloorpiece::MoveFloorpiece(FVector NewLocation)
 	FVector RandomPoint;
 	for (int i = 0; i < PickupCount; ++i)
 	{		
-		if (!IsValid(BaseObject) || !IsValid(MyLevel)) continue;
+		if (!IsValid(BaseObject) || !IsValid(MyLevel))
+			continue;
+
 		if (Pickups.Num() < PickupCount)
 		{
 			AHermitShellActor* SpawnedActor = MyLevel->SpawnActor<AHermitShellActor>(BaseObject);
 			Pickups.AddUnique(SpawnedActor);
 		}
 		
-
 		RandomPoint = MathLib::RandomPointInBoundingBox(Origin, Extent);
 		
 		UE_LOG(LogTemp, Log, TEXT("SPAWN Num: %d| x: %f  y: %f z: %f"), Pickups.Num(), RandomPoint.X, RandomPoint.Y, RandomPoint.Z);
