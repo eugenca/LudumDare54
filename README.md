@@ -11,3 +11,5 @@ Game: https://wertas1.itch.io/shell-shuffle
 Game not fully completed - autospawn was not implemented yet.
 
 But we can spawn a lot of shells :)
+
+Made with Unreal Engine 5.2
