@@ -5,7 +5,9 @@
 Made by Eugene, Marissa, Annie, Kim, Nicky, John
 
 Jam: https://itch.io/jam/ludum-dare-54-winnipeg
+
 Game: https://wertas1.itch.io/shell-shuffle
 
-Game not fully completed - autospawn was not implemented yet
+Game not fully completed - autospawn was not implemented yet.
+
 But we can spawn a lot of shells :)
