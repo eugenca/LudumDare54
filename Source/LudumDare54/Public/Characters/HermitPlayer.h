@@ -11,6 +11,9 @@
 
 #include "HermitPlayer.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInteractPressed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnShellDropTight);
+
 
 UCLASS()
 class LUDUMDARE54_API AHermitPlayer : public ACharacter, public IHermitStateChangedInterface
@@ -29,11 +32,16 @@ class LUDUMDARE54_API AHermitPlayer : public ACharacter, public IHermitStateChan
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* InteractAction;
 
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SpawnShellAction;
+
 public:
 	// Sets default values for this character's properties
 	AHermitPlayer();
 
-	void EquipShell(class UHermitShell* Shell);
+	void PickShell(class AHermitShellActor* Shell);
+	void DropShell();
 
 protected:
 	// Begin AActor Interface
@@ -55,6 +63,7 @@ protected:
 
 	/** Called for looking input */
 	void Interact(const FInputActionValue& Value);
+	void SpawnShell(const FInputActionValue& Value);
 
 public:
 	// Called every frame
@@ -71,6 +80,11 @@ private:
 	FVector CurrentDirection;
 
 public:
+	UPROPERTY(BlueprintAssignable, Category = "HermitInput")
+	FOnInteractPressed OnInteractPressed;
+
+	UPROPERTY(BlueprintAssignable, Category = "Hermit")
+	FOnShellDropTight OnShellDropTight;
 
 	// Crab growth
 	// Scale from 1 to x
@@ -82,6 +96,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
 	double HermitGrowthRate = 0.1f;
+
+
+	//Constraints on shell size
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
+	//float BaseCollisionRadius = 20.f;
 
 	// Crab size
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = HermitProperties)
@@ -109,10 +128,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
 	class USkeletalMeshComponent* CrabMesh = nullptr;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
+	UClass* ShellActorClass = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
 	class UStaticMeshComponent* ShellMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
 	class UHermitShell* Shell = nullptr;
 	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
+	float TEMPDistToSpawn = 8.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitProperties)
+	TSubclassOf<class AHermitShellActor> TEMPShell;
 };

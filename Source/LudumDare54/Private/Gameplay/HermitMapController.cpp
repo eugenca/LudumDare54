@@ -47,7 +47,7 @@ void AHermitMapController::Tick(float DeltaSeconds)
 		return;
 	}
 
-	UE_LOG(LogHermit, Warning, TEXT("AHermitMapController::Tick"));
+	//UE_LOG(LogHermit, Warning, TEXT("AHermitMapController::Tick"));
 
 	check(PlayerCharacter);
 	check(VerticalScaleCurve);
@@ -66,7 +66,7 @@ void AHermitMapController::Tick(float DeltaSeconds)
 	const FVector PlayerLocation = PlayerCharacter->GetActorLocation();
 
 	
-	UE_LOG(LogHermit, Log, TEXT("%s"), *ViewportSize.ToString());
+	//UE_LOG(LogHermit, Log, TEXT("%s"), *ViewportSize.ToString());
 
 	const FBox CameraSpaceBox(
 		FVector(0.,				CurrentPosition,					   0./*DebugZCoord*/),
@@ -86,21 +86,24 @@ void AHermitMapController::Tick(float DeltaSeconds)
 	FlushPersistentDebugLines(World);
 	if (bDrawDebugCameraSpace)
 	{
+		FBox CameraSpaceBoxDebug = CameraSpaceBox.MoveTo(CameraSpaceBox.GetCenter() + FVector(0.,0.,DebugZCoord));
+		FBox CameraViewBoxDebug = CameraViewBox.MoveTo(CameraViewBox.GetCenter() + FVector(0.,0.,DebugZCoord));
 
-		FVector CameraSpaceBoxTopLeft = CameraSpaceBox.Min + FVector(0., CameraSpaceBox.GetSize().Y, 0.);
-		FVector CameraSpaceBoxBottomRight = CameraSpaceBox.Min + FVector(CameraSpaceBox.GetSize().X, 0., 0.);
-		DrawDebugLine(World, CameraSpaceBox.Min, CameraSpaceBoxTopLeft, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
-		DrawDebugLine(World, CameraSpaceBoxTopLeft, CameraSpaceBox.Max, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
-		DrawDebugLine(World, CameraSpaceBox.Max, CameraSpaceBoxBottomRight, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
-		DrawDebugLine(World, CameraSpaceBoxBottomRight, CameraSpaceBox.Min, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
 
-		CameraViewBox = CameraViewBox.ExpandBy(-DebugLineThickness);
-		FVector CameraViewBoxTopLeft = CameraViewBox.Min + FVector(0., CameraViewBox.GetSize().Y, 0.);
-		FVector CameraViewBoxBottomRight = CameraViewBox.Min + FVector(CameraViewBox.GetSize().X, 0., 0.);
-		DrawDebugLine(World, CameraViewBox.Min, CameraViewBoxTopLeft, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
-		DrawDebugLine(World, CameraViewBoxTopLeft, CameraViewBox.Max, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
-		DrawDebugLine(World, CameraViewBox.Max, CameraViewBoxBottomRight, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
-		DrawDebugLine(World, CameraViewBoxBottomRight, CameraViewBox.Min, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
+		FVector CameraSpaceBoxTopLeft = CameraSpaceBoxDebug.Min + FVector(0., CameraSpaceBoxDebug.GetSize().Y, 0.);
+		FVector CameraSpaceBoxBottomRight = CameraSpaceBoxDebug.Min + FVector(CameraSpaceBoxDebug.GetSize().X, 0., 0.);
+		DrawDebugLine(World, CameraSpaceBoxDebug.Min, CameraSpaceBoxTopLeft, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
+		DrawDebugLine(World, CameraSpaceBoxTopLeft, CameraSpaceBoxDebug.Max, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
+		DrawDebugLine(World, CameraSpaceBoxDebug.Max, CameraSpaceBoxBottomRight, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
+		DrawDebugLine(World, CameraSpaceBoxBottomRight, CameraSpaceBoxDebug.Min, DebugCameraSpaceBoxColor, true, -1.f, 0, DebugLineThickness);
+
+		CameraViewBoxDebug = CameraViewBoxDebug.ExpandBy(-DebugLineThickness);
+		FVector CameraViewBoxTopLeft = CameraViewBoxDebug.Min + FVector(0., CameraViewBoxDebug.GetSize().Y, 0.);
+		FVector CameraViewBoxBottomRight = CameraViewBoxDebug.Min + FVector(CameraViewBoxDebug.GetSize().X, 0., 0.);
+		DrawDebugLine(World, CameraViewBoxDebug.Min, CameraViewBoxTopLeft, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
+		DrawDebugLine(World, CameraViewBoxTopLeft, CameraViewBoxDebug.Max, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
+		DrawDebugLine(World, CameraViewBoxDebug.Max, CameraViewBoxBottomRight, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
+		DrawDebugLine(World, CameraViewBoxBottomRight, CameraViewBoxDebug.Min, CameraViewBoxColor, true, -1.f, 0, DebugLineThickness);
 	}
 #endif
 

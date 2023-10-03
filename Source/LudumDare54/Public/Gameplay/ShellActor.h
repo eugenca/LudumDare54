@@ -22,12 +22,20 @@ public:
 	// Called every frame
 	//virtual void Tick(float DeltaTime) override;
 
+	// Calculated minmax
+	UFUNCTION(BlueprintPure, Category = HermitShell)
+	FVector2D GetMinMaxCrabScale();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitShell)
-	UStaticMesh* ShellMesh = nullptr;
+	UStaticMeshComponent* ShellMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitShell)
 	float ShellScale = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitShell)
+	FName ShellSocketName;
+
 };
 
 
@@ -53,6 +61,8 @@ public:
 	virtual void InteractBP_Implementation(AActor* Instigator) override;
 	// End IHermitInteractInterface Interface
 
+	UFUNCTION(BlueprintPure, Category = HermitShell)
+	bool IsPickableByPlayer(AActor* InInstigator);
 
 public:
 
@@ -64,7 +74,7 @@ public:
 	float BaseInteractRadius = 25.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitShell)
-	class USphereComponent* CollisionSphere;
+	class UCapsuleComponent* CollisionCapsule;
 
 	// Shell mesh
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HermitShell)

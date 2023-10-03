@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "Ludum54GM.h"
 #include "Gameplay/HermitMapController.h"
@@ -24,16 +26,99 @@ AHermitPlayer::AHermitPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	TimeLeftToDieWithoutShell = DefaultTimeToDieWithoutShell;
+
+	ShellMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shell Mesh"));
+	ShellMesh->SetupAttachment(RootComponent);
+	ShellMesh->SetUsingAbsoluteScale(true);
 }
 
-void AHermitPlayer::EquipShell(UHermitShell* InShell)
+void AHermitPlayer::PickShell(class AHermitShellActor* InShellActor)
 {
 	// TODO: Animations?
 
-	Shell = nullptr;
+	if (!InShellActor || !InShellActor->ShellMesh)
+	{
+		UE_LOG(LogHermit, Error, TEXT("AHermitPlayer::EquipShell: Invalid InShell!"));
+		return;
+	}
 
-	Shell = InShell;
-	ShellMesh->SetStaticMesh(Shell->ShellMesh);
+	if (ShellActorClass)
+	{
+		DropShell();
+	}
+
+	ShellActorClass = InShellActor->GetClass();
+	Shell = InShellActor->Shell;
+
+	auto* OtherComponent = InShellActor->ShellMesh;
+	OtherComponent->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	InShellActor->ShellMesh = nullptr;
+	OtherComponent->UnregisterComponent();
+	//this->AddInstanceComponent(OtherComponent);
+	ShellMesh = OtherComponent;
+	ShellMesh->Rename(nullptr, this);
+	ShellMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, Shell->ShellSocketName);
+	ShellMesh->RegisterComponent();
+	ShellMesh->SetRelativeScale3D(FVector(Shell->ShellScale));
+	ShellMesh->SetUsingAbsoluteScale(true);
+	// 
+	// 
+	//ShellMesh = ShellActor->ShellMesh;
+	//ShellActor->ShellMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "TailSocket");
+
+	
+	GetWorld()->DestroyActor(InShellActor);
+
+	//Shell = ShellActor->ShellMesh;
+	//ShellMesh->SetStaticMesh(Shell->ShellMesh->GetStaticMesh());
+	//ShellMesh = Shell->ShellMesh;
+}
+
+void AHermitPlayer::DropShell()
+{
+	check(ShellActorClass);
+	check(ShellMesh);
+
+	UWorld* World = GetWorld();
+
+	//FActorSpawnParameters Params;
+	//Params.Template = ShellActor;
+
+	FVector NewLoc = GetActorLocation() - GetActorRotation().Vector().GetSafeNormal() * TEMPDistToSpawn;
+	FRotator NewRot = ShellMesh->GetComponentTransform().Rotator();
+	//FVector NewScal = ShellMesh->GetComponentTransform().GetScale3D();
+	FTransform Transform(NewRot, NewLoc, FVector(1, 1, 1));
+
+	AActor* SpawnedActor = World->SpawnActor(ShellActorClass, &Transform);
+	AHermitShellActor* NewShellActor = Cast<AHermitShellActor>(SpawnedActor);
+	NewShellActor->Shell = Shell;
+
+	if (!NewShellActor)
+	{
+		UE_LOG(LogHermit, Error, TEXT("AHermitPlayer::EquipShell: Spawned Actor!"));
+		return;
+	}
+
+	auto* MyComponent = ShellMesh;
+	auto* OtherComponent = NewShellActor->ShellMesh;
+
+	MyComponent->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	MyComponent->UnregisterComponent();
+
+	OtherComponent->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	OtherComponent->UnregisterComponent();
+	OtherComponent->DestroyComponent();
+
+	ShellMesh = nullptr;
+	NewShellActor->ShellMesh = MyComponent;
+
+	NewShellActor->ShellMesh->Rename(nullptr, NewShellActor);
+	NewShellActor->ShellMesh->AttachToComponent(NewShellActor->CollisionCapsule, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	NewShellActor->ShellMesh->RegisterComponent();
+	NewShellActor->ShellMesh->SetRelativeScale3D(FVector(NewShellActor->Shell->ShellScale));
+
+	ShellActorClass = nullptr;
+	Shell = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -132,12 +217,32 @@ void AHermitPlayer::Tick(float DeltaTime)
 
 	//CurrentDirection = FMath::VInterpTo(CurrentDirection, DesiredDirection, DeltaTime, HermitRotationSpeedDegrees);
 	CurrentDirection = FMath::VInterpNormalRotationTo(CurrentDirection, DesiredDirection, DeltaTime, HermitRotationSpeedDegrees);
-	UE_LOG(LogHermit, Warning, TEXT("Curr: %s, Desir: %s"), *CurrentDirection.ToString(), *DesiredDirection.ToString());
-	SetActorRotation(CurrentDirection.Rotation());
+	//UE_LOG(LogHermit, Warning, TEXT("Curr: %s, Desir: %s"), *CurrentDirection.ToString(), *DesiredDirection.ToString());
+	//SetActorRotation(CurrentDirection.Rotation());
 
 	if (!Shell)
 	{
 		TimeLeftToDieWithoutShell -= DeltaTime;
+	}
+	else
+	{
+		TimeLeftToDieWithoutShell += DeltaTime;
+		if (TimeLeftToDieWithoutShell > DefaultTimeToDieWithoutShell)
+		{
+			TimeLeftToDieWithoutShell = DefaultTimeToDieWithoutShell;
+		}
+	}
+
+	if (Shell)
+	{
+		FVector2D MinMax = Shell->GetMinMaxCrabScale();
+		check(CurrentHermitScale > MinMax.X);
+
+		if (CurrentHermitScale > MinMax.Y)
+		{
+			DropShell();
+			OnShellDropTight.Broadcast();
+		}
 	}
 
 	if (TimeLeftToDieWithoutShell < 0.f)
@@ -161,6 +266,8 @@ void AHermitPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 			//Interacting
 			EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AHermitPlayer::Interact);
+
+			EnhancedInputComponent->BindAction(SpawnShellAction, ETriggerEvent::Triggered, this, &AHermitPlayer::SpawnShell);
 		}
 		else 
 		{
@@ -188,21 +295,31 @@ void AHermitPlayer::Move(const FInputActionValue& Value)
 	const FVector2D MovementVector = Value.Get<FVector2D>() * HermitSpeedScale;
 
 	const FVector2D MovementVectorNormalized = MovementVector.GetSafeNormal();
-	DesiredDirection = FVector(MovementVectorNormalized.Y, MovementVectorNormalized.X, 0.);
+	DesiredDirection = FVector(MovementVectorNormalized.X, MovementVectorNormalized.Y, 0.);
 
-	FRotator r = GetControlRotation();
+	AddMovementInput(FVector::RightVector, MovementVector.Y);
+	AddMovementInput(FVector::ForwardVector, -MovementVector.X);
 
-	const FVector v = KML::GetRightVector({ 0, r.Roll, r.Yaw });
-	AddMovementInput(v, MovementVector.Y);
 
-	const FVector va = KML::GetForwardVector({ 0, 0, r.Yaw });
-	AddMovementInput(va, -MovementVector.X);
+	//FRotator r = FVector(0., 1., 0.).Rotation();
+	//
+	//const FVector v = KML::GetRightVector({ 0, r.Roll, r.Yaw });
+	//AddMovementInput(v, MovementVector.X);
+	//
+	//const FVector va = KML::GetForwardVector({ 0, 0, r.Yaw });
+	//AddMovementInput(va, MovementVector.Y);
 
 	
 }
 
 void AHermitPlayer::Interact(const FInputActionValue& Value)
 {
-	// input is a Vector2D
-	bool MovementVector = Value.Get<bool>();
+	OnInteractPressed.Broadcast();
+}
+
+void AHermitPlayer::SpawnShell(const FInputActionValue& Value)
+{
+	FVector LocToSpawnTemp = GetActorLocation() + GetActorRotation().Vector().GetSafeNormal() * TEMPDistToSpawn;
+	FTransform Transform(LocToSpawnTemp);
+	GetWorld()->SpawnActor(TEMPShell, &Transform, FActorSpawnParameters());
 }
